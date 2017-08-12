@@ -1,0 +1,29 @@
+
+#head {
+	text-align: right;
+	padding: 20px;
+}
+nav#head ul li a:link,
+nav#head ul li a:visited {
+	color: #555,
+	text-decoration:none; 
+	padding: 10px;
+}
+
+nav#head ul li {
+    display: inline;
+}
+table {
+  border-collaspe: collapse;
+  width: 100%;
+}
+table, th, td {
+	border: 1px solid #ddd;
+	text-align: center;
+}
+th,td {
+	padding: 15px;
+}
+h2 {
+	text-align: center;
+}
