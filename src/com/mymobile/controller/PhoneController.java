@@ -49,4 +49,10 @@ public class PhoneController {
 	{
 		return "redirect:http://localhost:8080/MyMobile/account/login";
 	}
+	
+	@RequestMapping("/admin")
+	public String admin()
+	{
+		return "redirect:http://localhost:8080/MyMobile/admin";
+	}
 }

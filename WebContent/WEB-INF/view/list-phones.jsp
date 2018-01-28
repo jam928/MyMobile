@@ -12,6 +12,7 @@
 	<nav id  = "head">
 		<ul>
 			<li><a href = "login">View Account</a></li>
+			<li><a href = "admin">Admin</a>
 		</ul>
 	
 	</nav>
