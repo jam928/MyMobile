@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin · Add phone')}"></head>
+<body>
+<header th:replace="~{fragments :: header('admin')}"></header>
+
+<main class="container">
+	<a class="back-link" th:href="@{/admin/phones}">← Phones</a>
+	<div class="page-header">
+		<div>
+			<p class="brand-label">Admin</p>
+			<h1>Add a phone</h1>
+		</div>
+	</div>
+
+	<div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+<form class="details" th:action="@{/admin/phones}" th:object="${phone}" method="post" enctype="multipart/form-data" novalidate>
+		<div class="stack">
+			<section class="card form-card">
+				<h2>Photo</h2>
+				<p class="muted">JPEG, PNG or WebP, up to 5 MB. A square photo on a white background looks best.</p>
+				<div class="form">
+					<label class="upload" for="photo">
+						<img id="photo-preview" alt="" hidden>
+						<span id="photo-placeholder" class="muted">Click to choose a photo</span>
+					</label>
+					<input class="input" type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp"
+						th:classappend="${#fields.hasErrors('photo')} ? 'is-invalid'">
+					<span class="field-error" th:if="${#fields.hasErrors('photo')}" th:errors="*{photo}"></span>
+					<span class="field-error" id="photo-size-error" hidden>The photo is too large. Please choose one that's 5 MB or smaller.</span>
+					<span class="hint" th:if="${#fields.hasErrors('*')} and ${!#fields.hasErrors('photo')}">Please choose the photo again.</span>
+				</div>
+			</section>
+		</div>
+
+		<div class="stack">
+			<section class="card form-card">
+				<h2>Details</h2>
+				<p class="muted">Shown on the phone list and the phone's page.</p>
+				<div class="form">
+					<div class="field">
+						<label for="name">Name</label>
+						<input class="input" type="text" th:field="*{name}" th:errorclass="is-invalid" placeholder="Galaxy S25">
+						<span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+					</div>
+					<div class="field-row">
+						<div class="field">
+							<label for="brand">Brand</label>
+							<input class="input" type="text" th:field="*{brand}" th:errorclass="is-invalid" list="brand-options" autocomplete="off">
+							<datalist id="brand-options"><option th:each="b : ${brands}" th:value="${b}"></option></datalist>
+							<span class="field-error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+						</div>
+						<div class="field">
+							<label for="color">Color</label>
+							<input class="input" type="text" th:field="*{color}" th:errorclass="is-invalid" placeholder="Black">
+							<span class="field-error" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></span>
+						</div>
+					</div>
+					<div class="field-row">
+						<div class="field">
+							<label for="condition">Condition</label>
+							<select class="input" th:field="*{condition}" th:errorclass="is-invalid">
+								<option value="New">New</option>
+								<option value="Used">Used</option>
+							</select>
+							<span class="field-error" th:if="${#fields.hasErrors('condition')}" th:errors="*{condition}"></span>
+						</div>
+						<div class="field">
+							<label for="rating">Rating</label>
+							<select class="input" th:field="*{rating}" th:errorclass="is-invalid">
+								<option th:each="r : ${#numbers.sequence(5, 1, -1)}" th:value="${r}" th:text="${r} + (${r} == 1 ? ' star' : ' stars')">5 stars</option>
+							</select>
+							<span class="field-error" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></span>
+						</div>
+					</div>
+					<div class="field-row">
+						<div class="field">
+							<label for="price">Price ($)</label>
+							<input class="input" type="number" th:field="*{price}" th:errorclass="is-invalid" min="0.01" step="0.01" placeholder="799.00">
+							<span class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+						</div>
+						<div class="field">
+							<label for="quantity">In stock</label>
+							<input class="input" type="number" th:field="*{quantity}" th:errorclass="is-invalid" min="0" step="1" placeholder="10">
+							<span class="field-error" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></span>
+						</div>
+					</div>
+					<div class="field">
+						<label for="description">Description <span class="muted">(optional)</span></label>
+						<textarea class="input" th:field="*{description}" th:errorclass="is-invalid" rows="3"></textarea>
+						<span class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+					</div>
+				</div>
+			</section>
+
+			<section class="card form-card">
+				<h2>Specifications <span class="muted small">(optional)</span></h2>
+				<p class="muted">Leave blank to show “—”.</p>
+				<div class="form">
+					<div class="field-row">
+						<div class="field">
+							<label for="storage">Storage</label>
+							<input class="input" type="text" th:field="*{storage}" th:errorclass="is-invalid" placeholder="128 GB">
+							<span class="field-error" th:if="${#fields.hasErrors('storage')}" th:errors="*{storage}"></span>
+						</div>
+						<div class="field">
+							<label for="battery">Battery</label>
+							<input class="input" type="text" th:field="*{battery}" th:errorclass="is-invalid" placeholder="4000 mAh">
+							<span class="field-error" th:if="${#fields.hasErrors('battery')}" th:errors="*{battery}"></span>
+						</div>
+					</div>
+					<div class="field">
+						<label for="screen">Display</label>
+						<input class="input" type="text" th:field="*{screen}" th:errorclass="is-invalid" placeholder='6.2" OLED, 120 Hz'>
+						<span class="field-error" th:if="${#fields.hasErrors('screen')}" th:errors="*{screen}"></span>
+					</div>
+					<div class="field">
+						<label for="camera">Camera</label>
+						<input class="input" type="text" th:field="*{camera}" th:errorclass="is-invalid" placeholder="50 MP rear, 12 MP front">
+						<span class="field-error" th:if="${#fields.hasErrors('camera')}" th:errors="*{camera}"></span>
+					</div>
+				</div>
+			</section>
+
+			<div class="actions">
+				<button class="btn btn-primary" type="submit">Add phone</button>
+				<a class="btn btn-secondary" th:href="@{/admin/phones}">Cancel</a>
+			</div>
+		</div>
+	</form>
+</main>
+
+<script>
+	// preview the chosen photo; reject files over the 5 MB upload limit before sending them
+	const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+	document.getElementById('photo').addEventListener('change', function () {
+		const preview = document.getElementById('photo-preview');
+		const tooLarge = this.files[0] && this.files[0].size > MAX_PHOTO_BYTES;
+		document.getElementById('photo-size-error').hidden = !tooLarge;
+		if (tooLarge) this.value = '';
+		const file = this.files[0];
+		preview.hidden = !file;
+		document.getElementById('photo-placeholder').hidden = !!file;
+		if (file) preview.src = URL.createObjectURL(file);
+	});
+</script>
+</body>
+</html>

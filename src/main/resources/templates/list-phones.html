@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Phones')}"></head>
+<body>
+<header th:replace="~{fragments :: header('phones')}"></header>
+
+<main class="container">
+	<div class="page-header">
+		<div>
+			<h1>Phones</h1>
+			<p class="muted">Pick a phone and add it to your plan in a couple of clicks.</p>
+		</div>
+		<a class="btn btn-primary" th:href="${loggedIn} ? @{/account/addALine} : @{/account/login}">Add a line</a>
+	</div>
+
+	<!-- plain GET form: works without JavaScript; picking a brand submits it right away -->
+	<form class="filters" th:action="@{/main/list}" method="get" role="search">
+		<div class="search">
+			<input class="input" type="search" name="q" th:value="${q}" placeholder="Search by name, brand or color" aria-label="Search phones">
+			<button class="btn btn-primary" type="submit">Search</button>
+			<select class="input sort-select" name="sort" aria-label="Sort by" onchange="this.form.submit()">
+				<option th:each="s : ${sorts}" th:value="${s.param}" th:selected="${s == sort}" th:text="'Sort: ' + ${s.label}">Sort</option>
+			</select>
+		</div>
+		<div class="chips" role="radiogroup" aria-label="Brand">
+			<label class="chip">
+				<input type="radio" name="brand" value="" th:checked="${brand == null}" onchange="this.form.submit()">
+				<span>All brands</span>
+			</label>
+			<label class="chip" th:each="b : ${brands}">
+				<input type="radio" name="brand" th:value="${b.brand}" th:checked="${b.brand == brand}" onchange="this.form.submit()">
+				<span><th:block th:text="${b.brand}">Apple</th:block> <span class="chip-count" th:text="${b.count}">3</span></span>
+			</label>
+		</div>
+	</form>
+
+	<div class="results-bar">
+		<p class="muted small" th:if="${phones.totalElements > 0}"
+			th:with="from=${phones.number * phones.size + 1}"
+			th:text="|Showing ${from}–${from + phones.numberOfElements - 1} of ${phones.totalElements} phones|">Showing</p>
+		<a class="small" th:if="${q != null or brand != null or sort.name() != 'FEATURED'}" th:href="@{/main/list}">Clear filters</a>
+	</div>
+
+	<div class="card empty-state" th:if="${phones.totalElements == 0}">
+		<h3>No phones found</h3>
+		<p class="muted">
+			<th:block th:if="${q}">Nothing matches “<span th:text="${q}">query</span>”</th:block><th:block th:if="${brand}"> in <span th:text="${brand}">brand</span></th:block><th:block th:unless="${q} or ${brand}">There are no phones yet</th:block>.
+			Try a different search or brand.
+		</p>
+		<a class="btn btn-secondary" th:href="@{/main/list}">Show all phones</a>
+	</div>
+
+	<div class="grid">
+		<a class="card phone-card" th:each="phone : ${phones.content}" th:href="@{/main/phones/{pid}(pid=${phone.pid})}">
+			<img class="phone-img" th:src="@{/photos/{key}(key=${phone.imgSrc})}" th:alt="${phone.alt}" loading="lazy">
+			<div class="card-body">
+				<div class="meta">
+					<span class="badge" th:classappend="${phone.condition == 'New'} ? 'badge-primary'" th:text="${phone.condition}">New</span>
+					<span class="muted small" th:text="${phone.color}">Black</span>
+				</div>
+				<p class="brand-label" th:text="${phone.brand}">Brand</p>
+				<h3 th:text="${phone.name}">Phone</h3>
+				<span th:replace="~{fragments :: stars(${phone.rating})}"></span>
+				<div class="card-footer">
+					<span class="price" th:text="${'$' + #numbers.formatDecimal(phone.price, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+					<span class="badge" th:classappend="${phone.quantity > 0} ? 'badge-success'"
+						th:text="${phone.quantity > 0} ? ${phone.quantity + ' in stock'} : 'Out of stock'">in stock</span>
+				</div>
+			</div>
+		</a>
+	</div>
+
+	<nav th:replace="~{fragments :: pagination(${phones}, ${listUrl})}"></nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Add a line')}"></head>
+<body>
+<header th:replace="~{fragments :: header('line')}"></header>
+
+<main class="container">
+	<div class="page-header">
+		<div>
+			<h1>Add a line</h1>
+			<p class="muted">Choose a phone and enter the number for the new line. The phone price plus a $10 activation fee is added to your balance.</p>
+		</div>
+	</div>
+
+	<form class="form" th:action="@{/account/saveLine}" th:object="${phoneLine}" method="post">
+		<div class="alert alert-error" th:if="${#fields.hasErrors('pid')}" th:errors="*{pid}"></div>
+
+		<div class="options">
+			<label class="option" th:each="phone : ${phones}">
+				<input type="radio" th:field="*{pid}" th:value="${phone.pid}" required>
+				<div class="card phone-card">
+					<span class="check"></span>
+					<img class="phone-img" th:src="@{/photos/{key}(key=${phone.imgSrc})}" th:alt="${phone.alt}" loading="lazy">
+					<div class="card-body">
+						<div class="meta">
+							<span class="badge" th:classappend="${phone.condition == 'New'} ? 'badge-primary'" th:text="${phone.condition}">New</span>
+							<span class="muted small" th:text="${phone.color}">Black</span>
+						</div>
+						<h3 th:text="${phone.name}">Phone</h3>
+						<span th:replace="~{fragments :: stars(${phone.rating})}"></span>
+						<div class="card-footer">
+							<span class="price" th:text="${'$' + #numbers.formatDecimal(phone.price, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+						</div>
+					</div>
+				</div>
+			</label>
+		</div>
+
+		<div class="card form-card" style="max-width: 460px">
+			<div class="form">
+				<div class="field">
+					<label for="phoneNumber">Phone number</label>
+					<input class="input" type="tel" th:field="*{phoneNumber}" th:errorclass="is-invalid" placeholder="555 123 4567" autocomplete="tel">
+					<span class="field-error" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></span>
+				</div>
+				<div class="actions">
+					<button class="btn btn-primary" type="submit">Add line</button>
+					<a class="btn btn-secondary" th:href="@{/account/myAccount}">Cancel</a>
+				</div>
+			</div>
+		</div>
+	</form>
+</main>
+</body>
+</html>

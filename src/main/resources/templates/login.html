@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Sign in')}"></head>
+<body>
+<header th:replace="~{fragments :: header('login')}"></header>
+
+<main class="auth">
+	<div class="card">
+		<h1>Welcome back</h1>
+		<p class="lead">Sign in to manage your lines, plan and payments.</p>
+
+		<div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+		<div class="alert alert-success" th:if="${param.logout}">You've been signed out.</div>
+		<div class="alert alert-error" th:if="${param.error}">Invalid email or password.</div>
+
+		<!-- handled by Spring Security (see SecurityConfig) -->
+		<form class="form" th:action="@{/account/loggedIn}" method="post">
+			<div class="field">
+				<label for="email">Email</label>
+				<input class="input" type="email" id="email" name="email" autocomplete="email" required autofocus>
+			</div>
+			<div class="field">
+				<label for="password">Password</label>
+				<input class="input" type="password" id="password" name="password" autocomplete="current-password" required>
+			</div>
+			<div class="auth-links">
+				<span></span>
+				<a th:href="@{/account/forgotPW}">Forgot password?</a>
+			</div>
+			<button class="btn btn-primary btn-block" type="submit">Sign in</button>
+		</form>
+
+		<p class="auth-footer">New to MyMobile? <a th:href="@{/account/register}">Create an account</a></p>
+	</div>
+</main>
+</body>
+</html>

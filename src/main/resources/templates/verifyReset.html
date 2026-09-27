@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Reset password')}"></head>
+<body>
+<header th:replace="~{fragments :: header('login')}"></header>
+
+<main class="auth">
+	<div class="card">
+		<h1>Reset your password</h1>
+		<p class="lead">Enter the email address on your account.</p>
+
+		<div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+		<form class="form" th:action="@{/account/reset}" method="post">
+			<div class="field">
+				<label for="email">Email</label>
+				<input class="input" type="email" id="email" name="email" th:value="${email}" autocomplete="email" required autofocus>
+			</div>
+			<button class="btn btn-primary btn-block" type="submit">Continue</button>
+		</form>
+
+		<p class="auth-footer"><a th:href="@{/account/login}">Back to sign in</a></p>
+	</div>
+</main>
+</body>
+</html>

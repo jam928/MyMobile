@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Phone plans')}"></head>
+<body>
+<header th:replace="~{fragments :: header('plans')}"></header>
+
+<main class="container">
+	<div class="page-header">
+		<div>
+			<h1>Choose a plan</h1>
+			<p class="muted">The monthly rate is added to your balance when you pick a plan.</p>
+		</div>
+	</div>
+
+	<form class="form" th:action="@{/account/savePhonePlan}" th:object="${plan}" method="post">
+		<div class="options">
+			<label class="option" th:each="p : ${phonePlans}">
+				<input type="radio" th:field="*{planId}" th:value="${p.planId}" required>
+				<div class="card card-body">
+					<span class="check"></span>
+					<span class="badge badge-primary" th:if="${p.planId == currentPlanId}">Current plan</span>
+					<p class="plan-price"><th:block th:text="${'$' + #numbers.formatDecimal(p.monthlyRate, 1, 'COMMA', 2, 'POINT')}">$0</th:block><span>/month</span></p>
+					<p class="stat-label" th:text="${p.numberOfLines == 1} ? '1 line' : ${'Up to ' + p.numberOfLines + ' lines'}">lines</p>
+					<p class="muted" th:text="${p.description}">description</p>
+				</div>
+			</label>
+		</div>
+
+		<div class="actions">
+			<button class="btn btn-primary" type="submit">Save plan</button>
+			<a class="btn btn-secondary" th:href="@{/account/myAccount}">Cancel</a>
+		</div>
+	</form>
+</main>
+</body>
+</html>

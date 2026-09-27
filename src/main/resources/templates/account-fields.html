@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- name / email / password / birthday fields shared by the register and reset forms -->
+<th:block th:fragment="fields(passwordAutocomplete)">
+	<div class="field">
+		<label for="name">Full name</label>
+		<input class="input" type="text" th:field="*{name}" th:errorclass="is-invalid" autocomplete="name">
+		<span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+	</div>
+	<div class="field">
+		<label for="email">Email</label>
+		<input class="input" type="email" th:field="*{email}" th:errorclass="is-invalid" autocomplete="email">
+		<span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+	</div>
+	<div class="field">
+		<label for="password">Password</label>
+		<input class="input" type="password" th:field="*{password}" th:errorclass="is-invalid" th:attr="autocomplete=${passwordAutocomplete}">
+		<span class="hint" th:unless="${#fields.hasErrors('password')}">At least 8 characters.</span>
+		<span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+	</div>
+	<div class="field">
+		<label for="birthday">Date of birth</label>
+		<input class="input" type="date" th:field="*{birthday}" th:errorclass="is-invalid" autocomplete="bday">
+		<span class="field-error" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}"></span>
+	</div>
+</th:block>
+</body>
+</html>

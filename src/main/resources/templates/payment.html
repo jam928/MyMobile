@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Make a payment')}"></head>
+<body>
+<header th:replace="~{fragments :: header('pay')}"></header>
+
+<main class="container" th:with="balance=${'$' + #numbers.formatDecimal(currentCustomer.balance, 1, 'COMMA', 2, 'POINT')}, nothingDue=${currentCustomer.balance <= 0}">
+	<div class="page-header">
+		<div>
+			<h1>Make a payment</h1>
+			<p class="muted">Balance due: <strong th:text="${balance}">$0.00</strong></p>
+		</div>
+	</div>
+
+	<div class="alert alert-info" th:if="${nothingDue}">You have no balance due right now.</div>
+
+	<div class="two-col">
+		<section class="card form-card">
+			<h2>Saved cards</h2>
+			<p class="muted">Pay with a card you've used before.</p>
+
+			<p class="muted" th:if="${#lists.isEmpty(savedCards)}">You don't have any saved cards yet.</p>
+
+			<form class="form" th:unless="${#lists.isEmpty(savedCards)}" th:action="@{/account/savePaymentS}" method="post">
+				<div class="options-list">
+					<label class="option" th:each="card, iter : ${savedCards}">
+						<input type="radio" name="crid" th:value="${card.crid}" th:checked="${iter.first}" required>
+						<div class="card option-row">
+							<span class="check"></span>
+							<span class="card-icon" th:text="${#strings.abbreviate(card.vendor, 6)}">Visa</span>
+							<div>
+								<div class="line-number" th:text="${card.maskedNumber}">**** 1111</div>
+								<div class="muted small" th:text="'Expires ' + ${card.expirationDate}">Expires</div>
+							</div>
+						</div>
+					</label>
+				</div>
+				<button class="btn btn-primary" type="submit" th:disabled="${nothingDue}" th:text="'Pay ' + ${balance}">Pay</button>
+			</form>
+		</section>
+
+		<section class="card form-card">
+			<h2>New card</h2>
+			<p class="muted">The card is saved to your account for next time.</p>
+
+			<form class="form" th:action="@{/account/savePayment}" th:object="${creditCard}" method="post" novalidate>
+				<div class="field">
+					<label for="creditCardNumber">Card number</label>
+					<input class="input" type="text" th:field="*{creditCardNumber}" th:errorclass="is-invalid"
+						inputmode="numeric" autocomplete="cc-number" placeholder="4111111111111111" maxlength="16">
+					<span class="field-error" th:if="${#fields.hasErrors('creditCardNumber')}" th:errors="*{creditCardNumber}"></span>
+				</div>
+				<div class="field-row">
+					<div class="field">
+						<label for="expirationDate">Expiry</label>
+						<input class="input" type="month" th:field="*{expirationDate}" th:errorclass="is-invalid" autocomplete="cc-exp">
+						<span class="field-error" th:if="${#fields.hasErrors('expirationDate')}" th:errors="*{expirationDate}"></span>
+					</div>
+					<div class="field">
+						<label for="csc">Security code</label>
+						<input class="input" type="text" th:field="*{csc}" th:errorclass="is-invalid"
+							inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4">
+						<span class="field-error" th:if="${#fields.hasErrors('csc')}" th:errors="*{csc}"></span>
+					</div>
+				</div>
+				<div class="field">
+					<label for="vendor">Card type</label>
+					<select class="input" th:field="*{vendor}" th:errorclass="is-invalid">
+						<option value="Visa">Visa</option>
+						<option value="Mastercard">Mastercard</option>
+						<option value="Amex">American Express</option>
+						<option value="Discover">Discover</option>
+					</select>
+				</div>
+				<button class="btn btn-primary" type="submit" th:disabled="${nothingDue}" th:text="'Pay ' + ${balance}">Pay</button>
+			</form>
+		</section>
+	</div>
+</main>
+</body>
+</html>

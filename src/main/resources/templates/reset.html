@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Update your details')}"></head>
+<body>
+<header th:replace="~{fragments :: header('login')}"></header>
+
+<main class="auth">
+	<div class="card">
+		<h1>Update your details</h1>
+		<p class="lead">Choose a new password and check your details are still correct.</p>
+
+		<form class="form" th:action="@{/account/updateCredentials}" th:object="${customer}" method="post" novalidate>
+			<div th:replace="~{account-fields :: fields('new-password')}"></div>
+			<button class="btn btn-primary btn-block" type="submit">Save changes</button>
+		</form>
+
+		<p class="auth-footer"><a th:href="@{/account/login}">Back to sign in</a></p>
+	</div>
+</main>
+</body>
+</html>

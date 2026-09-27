@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(title)">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${title} + ' · MyMobile'">MyMobile</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<!-- active: which nav item to highlight (phones, account, line, plans, pay, admin, login, register) -->
+<header class="site-header" th:fragment="header(active)">
+	<div class="inner">
+		<a class="brand" th:href="@{/main/list}"><span class="brand-mark">M</span>MyMobile</a>
+		<nav class="nav">
+			<a th:href="@{/main/list}" th:classappend="${active == 'phones'} ? 'active'">Phones</a>
+			<th:block th:if="${loggedIn}">
+				<a th:href="@{/account/myAccount}" th:classappend="${active == 'account'} ? 'active'">My account</a>
+				<a th:href="@{/account/addALine}" th:classappend="${active == 'line'} ? 'active'">Add a line</a>
+				<a th:href="@{/account/selectPhonePlan}" th:classappend="${active == 'plans'} ? 'active'">Plans</a>
+				<a th:href="@{/account/pay}" th:classappend="${active == 'pay'} ? 'active'">Pay</a>
+				<a th:if="${isAdmin}" th:href="@{/admin/phones}" th:classappend="${active == 'admin'} ? 'active'">Admin</a>
+				<!-- logout must be a POST so it carries the CSRF token -->
+				<form class="nav-form" th:action="@{/account/logout}" method="post">
+					<button type="submit">Log out</button>
+				</form>
+			</th:block>
+			<th:block th:unless="${loggedIn}">
+				<a th:href="@{/account/login}" th:classappend="${active == 'login'} ? 'active'">Sign in</a>
+				<a class="btn btn-primary btn-sm" th:href="@{/account/register}">Create account</a>
+			</th:block>
+		</nav>
+	</div>
+</header>
+
+<!-- page links for a Spring Data Page; url is the page's path, may include a query string, e.g. '/main/list?q=pixel' -->
+<nav th:fragment="pagination(page, url)" class="pagination" aria-label="Pagination" th:if="${page.totalPages > 1}"
+	th:with="current=${page.number + 1}, total=${page.totalPages},
+		start=${current - 2 > 1 ? current - 2 : 1}, end=${current + 2 < total ? current + 2 : total}">
+	<a th:if="${page.hasPrevious()}" class="page-link" th:href="@{${url}(page=${current - 1})}" rel="prev">← Previous</a>
+	<span th:unless="${page.hasPrevious()}" class="page-link disabled">← Previous</span>
+
+	<div class="page-numbers">
+		<a th:if="${start > 1}" class="page-link" th:href="@{${url}(page=1)}">1</a>
+		<span th:if="${start > 2}" class="page-gap">…</span>
+		<th:block th:each="n : ${#numbers.sequence(start, end)}">
+			<span th:if="${n == current}" class="page-link current" aria-current="page" th:text="${n}">1</span>
+			<a th:unless="${n == current}" class="page-link" th:href="@{${url}(page=${n})}" th:text="${n}">2</a>
+		</th:block>
+		<span th:if="${end < total - 1}" class="page-gap">…</span>
+		<a th:if="${end < total}" class="page-link" th:href="@{${url}(page=${total})}" th:text="${total}">9</a>
+	</div>
+
+	<a th:if="${page.hasNext()}" class="page-link" th:href="@{${url}(page=${current + 1})}" rel="next">Next →</a>
+	<span th:unless="${page.hasNext()}" class="page-link disabled">Next →</span>
+</nav>
+
+<!-- page title and tabs shared by the admin pages; active: phones or users -->
+<div th:fragment="admin-header(active)">
+	<div class="page-header">
+		<div>
+			<p class="brand-label">Admin</p>
+			<h1 th:text="${active == 'users'} ? 'Users' : 'Phones'">Phones</h1>
+		</div>
+		<div class="actions">
+			<a class="btn btn-secondary" th:href="@{/swagger-ui.html}">API docs</a>
+			<a class="btn btn-primary" th:if="${active == 'phones'}" th:href="@{/admin/phones/new}">Add phone</a>
+		</div>
+	</div>
+	<nav class="tabs">
+		<a th:href="@{/admin/phones}" th:classappend="${active == 'phones'} ? 'active'">Phones</a>
+		<a th:href="@{/admin/users}" th:classappend="${active == 'users'} ? 'active'">Users</a>
+	</nav>
+</div>
+
+<!-- five star rating -->
+<span th:fragment="stars(rating)" class="stars" th:attr="aria-label=${rating} + ' out of 5 stars'"><span
+	th:each="i : ${#numbers.sequence(1, 5)}" th:classappend="${i > rating} ? 'off'">★</span></span>
+
+</body>
+</html>

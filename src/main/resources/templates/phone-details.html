@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${phone.name})}"></head>
+<body>
+<header th:replace="~{fragments :: header('phones')}"></header>
+
+<main class="container">
+	<a class="back-link" th:href="@{/main/list}">← All phones</a>
+
+	<div class="details">
+		<div class="card details-media">
+			<img th:src="@{/photos/{key}(key=${phone.imgSrc})}" th:alt="${phone.alt}">
+		</div>
+
+		<div class="details-info">
+			<div class="meta">
+				<span class="badge" th:classappend="${phone.condition == 'New'} ? 'badge-primary'" th:text="${phone.condition}">New</span>
+				<span class="muted" th:text="${phone.color}">Black</span>
+			</div>
+
+			<a class="brand-label" th:href="@{/main/list(brand=${phone.brand})}" th:text="${phone.brand}">Brand</a>
+			<h1 th:text="${phone.name}">Phone</h1>
+
+			<div class="meta">
+				<span th:replace="~{fragments :: stars(${phone.rating})}"></span>
+				<span class="muted small" th:text="${phone.rating} + ' out of 5'">4 out of 5</span>
+			</div>
+
+			<p class="details-price" th:text="${'$' + #numbers.formatDecimal(phone.price, 1, 'COMMA', 2, 'POINT')}">$0.00</p>
+
+			<p th:if="${phone.description}" class="details-description" th:text="${phone.description}">description</p>
+
+			<div class="actions">
+				<th:block th:if="${phone.quantity > 0}">
+					<a class="btn btn-primary" th:href="${loggedIn} ? @{/account/addALine(pid=${phone.pid})} : @{/account/login}"
+						th:text="${loggedIn} ? 'Add a line with this phone' : 'Sign in to add a line'">Add a line</a>
+					<span class="badge badge-success" th:text="${phone.quantity} + ' in stock'">in stock</span>
+				</th:block>
+				<span class="badge" th:unless="${phone.quantity > 0}">Out of stock</span>
+			</div>
+			<p class="hint">Adding a line puts the phone price plus a $10 activation fee on your balance.</p>
+
+			<section class="card specs">
+				<h2>Specifications</h2>
+				<dl>
+					<div><dt>Brand</dt><dd th:text="${phone.brand}">Apple</dd></div>
+					<div><dt>Storage</dt><dd th:text="${phone.storage} ?: '—'">32 GB</dd></div>
+					<div><dt>Display</dt><dd th:text="${phone.screen} ?: '—'">5.5"</dd></div>
+					<div><dt>Camera</dt><dd th:text="${phone.camera} ?: '—'">12 MP</dd></div>
+					<div><dt>Battery</dt><dd th:text="${phone.battery} ?: '—'">3000 mAh</dd></div>
+					<div><dt>Color</dt><dd th:text="${phone.color}">Black</dd></div>
+					<div><dt>Condition</dt><dd th:text="${phone.condition}">New</dd></div>
+				</dl>
+			</section>
+		</div>
+	</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Create account')}"></head>
+<body>
+<header th:replace="~{fragments :: header('register')}"></header>
+
+<main class="auth">
+	<div class="card">
+		<h1>Create your account</h1>
+		<p class="lead">It only takes a minute.</p>
+
+		<form class="form" th:action="@{/account/addCustomer}" th:object="${customer}" method="post" novalidate>
+			<div th:replace="~{account-fields :: fields('new-password')}"></div>
+			<button class="btn btn-primary btn-block" type="submit">Create account</button>
+		</form>
+
+		<p class="auth-footer">Already have an account? <a th:href="@{/account/login}">Sign in</a></p>
+	</div>
+</main>
+</body>
+</html>

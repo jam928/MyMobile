@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My account')}"></head>
+<body>
+<header th:replace="~{fragments :: header('account')}"></header>
+
+<main class="container">
+	<div class="page-header">
+		<div>
+			<h1 th:text="'Hi, ' + ${currentCustomer.name}">Hi</h1>
+			<p class="muted" th:text="${currentCustomer.email}">email</p>
+		</div>
+	</div>
+
+	<div class="alert alert-error" th:if="${lineError}" th:text="${lineError}"></div>
+	<div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+
+	<section class="stat-grid">
+		<div class="card stat">
+			<span class="stat-label">Balance due</span>
+			<span class="stat-value" th:text="${'$' + #numbers.formatDecimal(currentCustomer.balance, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+			<span class="muted small" th:text="${currentCustomer.balance > 0} ? 'Due by the 15th of the month' : 'You\'re all paid up.'"></span>
+			<div class="spacer"></div>
+			<a class="btn btn-primary" th:if="${currentCustomer.balance > 0}" th:href="@{/account/pay}">Pay balance</a>
+		</div>
+
+		<div class="card stat">
+			<span class="stat-label">Phone plan</span>
+			<th:block th:if="${phonePlan}">
+				<span class="stat-value" th:text="${'$' + #numbers.formatDecimal(phonePlan.monthlyRate, 1, 'COMMA', 2, 'POINT')} + '/mo'">$0/mo</span>
+				<span class="muted small" th:text="${phonePlan.description}">description</span>
+			</th:block>
+			<th:block th:unless="${phonePlan}">
+				<span class="stat-value">No plan</span>
+				<span class="muted small">Choose a plan to start adding lines.</span>
+			</th:block>
+			<div class="spacer"></div>
+			<a class="btn btn-secondary" th:href="@{/account/selectPhonePlan}" th:text="${phonePlan} ? 'Change plan' : 'Choose a plan'">Choose a plan</a>
+		</div>
+
+		<div class="card stat">
+			<span class="stat-label">Phone lines</span>
+			<span class="stat-value">
+				<th:block th:text="${#lists.size(phoneLines)}">0</th:block><span class="muted" th:if="${phonePlan}" th:text="' / ' + ${phonePlan.numberOfLines}"></span>
+			</span>
+			<span class="muted small">$10 activation fee per new line.</span>
+			<div class="spacer"></div>
+			<a class="btn btn-secondary" th:href="@{/account/addALine}">Add a line</a>
+		</div>
+	</section>
+
+	<section class="section">
+		<h2>Your lines</h2>
+
+		<div class="card empty-state" th:if="${#lists.isEmpty(phoneLines)}">
+			<h3>No phone lines yet</h3>
+			<p class="muted">Add a line to get a phone and a number on your account.</p>
+			<a class="btn btn-primary" th:href="@{/account/addALine}">Add your first line</a>
+		</div>
+
+		<div class="grid" th:unless="${#lists.isEmpty(phoneLines)}">
+			<article class="card phone-card" th:each="line : ${phoneLines}">
+				<a th:href="@{/main/phones/{pid}(pid=${line.pid})}"><img class="phone-img" th:src="@{/photos/{key}(key=${line.imgSrc})}" th:alt="${line.alt}" loading="lazy"></a>
+				<div class="card-body">
+					<h3><a class="phone-link" th:href="@{/main/phones/{pid}(pid=${line.pid})}" th:text="${line.phoneName}">Phone</a></h3>
+					<p class="muted small" th:text="${line.color}">Color</p>
+					<p class="line-number" th:text="${#strings.isEmpty(line.phoneNumber)} ? 'No number' : ${line.phoneNumber}">555</p>
+					<form class="card-footer" th:action="@{/account/deletePhoneLine}" method="post"
+						onsubmit="return confirm('Remove this phone line from your account?')">
+						<input type="hidden" name="phoneLineId" th:value="${line.plid}">
+						<button class="btn btn-danger btn-sm" type="submit">Remove line</button>
+					</form>
+				</div>
+			</article>
+		</div>
+	</section>
+</main>
+</body>
+</html>

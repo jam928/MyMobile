@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Something went wrong')}"></head>
+<body>
+<header th:replace="~{fragments :: header('')}"></header>
+
+<main class="auth">
+	<div class="card empty-state">
+		<p class="stat-value" th:text="${status}">500</p>
+		<th:block th:switch="${status}">
+			<th:block th:case="404">
+				<h1>Page not found</h1>
+				<p class="muted">The page you were looking for doesn't exist.</p>
+			</th:block>
+			<th:block th:case="403">
+				<h1>No access</h1>
+				<p class="muted">You don't have permission to do that. If you were filling in a form, reload the page and try again.</p>
+			</th:block>
+			<th:block th:case="413">
+				<h1>Upload too large</h1>
+				<p class="muted">Photos can be up to 5 MB. Go back and choose a smaller file.</p>
+			</th:block>
+			<th:block th:case="*">
+				<h1>Something went wrong</h1>
+				<p class="muted">Please try again in a moment.</p>
+			</th:block>
+		</th:block>
+		<div class="actions" style="justify-content: center">
+			<a class="btn btn-secondary" th:if="${status == 413}" href="javascript:history.back()">Go back</a>
+			<a class="btn btn-primary" th:href="@{/main/list}">Back to phones</a>
+		</div>
+	</div>
+</main>
+</body>
+</html>

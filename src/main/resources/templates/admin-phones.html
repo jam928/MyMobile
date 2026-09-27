@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin · Phones')}"></head>
+<body>
+<header th:replace="~{fragments :: header('admin')}"></header>
+
+<main class="container">
+	<div th:replace="~{fragments :: admin-header('phones')}"></div>
+
+	<div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+
+	<p class="muted small results-bar" th:text="|${phones.totalElements} phones|">24 phones</p>
+
+	<div class="card table-wrap">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Phone</th>
+					<th>Brand</th>
+					<th>Condition</th>
+					<th>Color</th>
+					<th class="num">Rating</th>
+					<th class="num">Price</th>
+					<th class="num">Stock</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="phone : ${phones.content}">
+					<td>
+						<a class="table-phone" th:href="@{/main/phones/{pid}(pid=${phone.pid})}">
+							<img th:src="@{/photos/{key}(key=${phone.imgSrc})}" th:alt="${phone.alt}" loading="lazy">
+							<span th:text="${phone.name}">Phone</span>
+						</a>
+					</td>
+					<td th:text="${phone.brand}">Brand</td>
+					<td><span class="badge" th:classappend="${phone.condition == 'New'} ? 'badge-primary'" th:text="${phone.condition}">New</span></td>
+					<td th:text="${phone.color}">Black</td>
+					<td class="num" th:text="${phone.rating} + ' / 5'">5 / 5</td>
+					<td class="num" th:text="${'$' + #numbers.formatDecimal(phone.price, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
+					<td class="num">
+						<span class="badge" th:classappend="${phone.quantity > 0} ? 'badge-success'" th:text="${phone.quantity}">0</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<nav th:replace="~{fragments :: pagination(${phones}, '/admin/phones')}"></nav>
+</main>
+</body>
+</html>
